@@ -61,7 +61,7 @@ function removeContact(contactId) {
 }
 
 function addContact(name, email, phone) {
-  const newcontact = {
+  const newContact = {
     id: uuidv4(),
     name: name,
     email: email,
@@ -70,8 +70,8 @@ function addContact(name, email, phone) {
   fs.readFile(contactsPath)
     .then((data) => {
       const normalizedData = JSON.parse(data);
-      if (checkIfContactExists(normalizedData, newcontact) === false) {
-        const result = [...normalizedData, newcontact];
+      if (checkIfContactExists(normalizedData, newContact) === false) {
+        const result = [...normalizedData, newContact];
         fs.writeFile(contactsPath, JSON.stringify(result), "utf-8");
         console.log(`Contact by name:${name} added succesfully`);
       } else console.log(`Contact by name:${name} already exists`);
