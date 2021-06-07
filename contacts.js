@@ -1,19 +1,25 @@
 const fs = require("fs").promises;
 const path = require("path");
-//const cp = require("./db/contacts.json");
+const { v4: uuidv4 } = require("uuid");
+
 const contactsPath = path.join("db", "contacts.json");
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-}
 // TODO: задокументировать каждую функцию
 async function listContacts() {
   try {
     const data = await fs.readFile(contactsPath);
-    console.log(data.toString());
+    console.table(data.toString());
   } catch (error) {
     console.log(error);
   }
+  // fs.readFile(contactsPath, (e, data) => {
+  //   console.log(data.toString());
+  //   if (e) {
+  //     console.error(e.message);
+  //   }
+  //   console.log(data.toString());
+  //   return console.log(data.toString());
+  // });
 }
 
 async function getContactById(contactId) {
@@ -34,14 +40,15 @@ function removeContact(contactId) {
       const result = normalizedData.filter(
         (contact) => contact.id !== contactId
       );
-      fs.writeFile(contactsPath, JSON.stringify(result));
+      fs.writeFile(contactsPath, JSON.stringify(result), "utf-8");
+      console.log(`Contact by id:${contactId} removed succesfully`);
     })
     .catch((error) => console.log(error));
 }
 
 function addContact(name, email, phone) {
   const newcontact = {
-    id: getRandomInt(10010),
+    id: uuidv4(),
     name: name,
     email: email,
     phone: phone,
@@ -50,10 +57,8 @@ function addContact(name, email, phone) {
     .then((data) => {
       const normalizedData = JSON.parse(data);
       const result = [...normalizedData, newcontact];
-      fs.writeFile(contactsPath, JSON.stringify(result));
+      fs.writeFile(contactsPath, JSON.stringify(result), "utf-8");
+      console.log(`Contact by name:${name} added succesfully`);
     })
     .catch((error) => console.log(error));
 }
-
-removeContact(470);
-//addContact("hello", "bye@gmail.com", "102");
