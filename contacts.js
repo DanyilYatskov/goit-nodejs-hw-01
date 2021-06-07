@@ -4,7 +4,25 @@ const { v4: uuidv4 } = require("uuid");
 
 const contactsPath = path.join("db", "contacts.json");
 
-// TODO: задокументировать каждую функцию
+function arrayEquals(a, b) {
+  return (
+    Array.isArray(a) &&
+    Array.isArray(b) &&
+    a.length === b.length &&
+    a.every((val, index) => val === b[index])
+  );
+}
+
+const checkIfContactExists = (contacts, newContact) => {
+  const contactFound = contacts.find(
+    (contact) => contact.name.toLowerCase() === newContact.name.toLowerCase()
+  );
+  if (contactFound !== undefined) {
+    return true;
+  }
+  return false;
+};
+
 async function listContacts() {
   try {
     const data = await fs.readFile(contactsPath);
@@ -26,7 +44,9 @@ async function getContactById(contactId) {
   try {
     const data = await fs.readFile(contactsPath);
     const normalizedData = JSON.parse(data);
-    const result = normalizedData.find((contact) => contact.id === contactId);
+    const result = normalizedData.find(
+      (contact) => contact.id.toString() === contactId.toString()
+    );
     console.log(result);
   } catch (error) {
     console.log(error);
@@ -38,10 +58,12 @@ function removeContact(contactId) {
     .then((data) => {
       const normalizedData = JSON.parse(data);
       const result = normalizedData.filter(
-        (contact) => contact.id !== contactId
+        (contact) => contact.id.toString() !== contactId.toString()
       );
-      fs.writeFile(contactsPath, JSON.stringify(result), "utf-8");
-      console.log(`Contact by id:${contactId} removed succesfully`);
+      if (arrayEquals(normalizedData, result) === false) {
+        fs.writeFile(contactsPath, JSON.stringify(result), "utf-8");
+        console.log(`Contact by id:${contactId} removed succesfully`);
+      } else console.log(`Cannot delete contact by id:${contactId}`);
     })
     .catch((error) => console.log(error));
 }
@@ -56,9 +78,18 @@ function addContact(name, email, phone) {
   fs.readFile(contactsPath)
     .then((data) => {
       const normalizedData = JSON.parse(data);
-      const result = [...normalizedData, newcontact];
-      fs.writeFile(contactsPath, JSON.stringify(result), "utf-8");
-      console.log(`Contact by name:${name} added succesfully`);
+      if (checkIfContactExists(normalizedData, newcontact) === false) {
+        const result = [...normalizedData, newcontact];
+        fs.writeFile(contactsPath, JSON.stringify(result), "utf-8");
+        console.log(`Contact by name:${name} added succesfully`);
+      } else console.log(`Contact by name:${name} already exists`);
     })
     .catch((error) => console.log(error));
 }
+
+module.exports = {
+  listContacts,
+  getContactById,
+  removeContact,
+  addContact,
+};
