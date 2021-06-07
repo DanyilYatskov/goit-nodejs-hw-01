@@ -26,18 +26,10 @@ const checkIfContactExists = (contacts, newContact) => {
 async function listContacts() {
   try {
     const data = await fs.readFile(contactsPath);
-    console.table(data.toString());
+    console.table(JSON.parse(data));
   } catch (error) {
     console.log(error);
   }
-  // fs.readFile(contactsPath, (e, data) => {
-  //   console.log(data.toString());
-  //   if (e) {
-  //     console.error(e.message);
-  //   }
-  //   console.log(data.toString());
-  //   return console.log(data.toString());
-  // });
 }
 
 async function getContactById(contactId) {

@@ -18,7 +18,6 @@ program.parse(process.argv);
 
 const argv = program.opts();
 
-// TODO: рефакторить
 function invokeAction({ action, id, name, email, phone }) {
   switch (action) {
     case "list":
@@ -26,7 +25,6 @@ function invokeAction({ action, id, name, email, phone }) {
       break;
 
     case "get":
-      //console.log(parseInt(id));
       getContactById(id);
       break;
 
